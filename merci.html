@@ -30,7 +30,13 @@
   .cta { display:flex; align-items:center; justify-content:center; min-height:56px; margin-top:16px; border-radius:14px; background:var(--accent); color:var(--ink); font-weight:700; font-size:17px; text-decoration:none; }
   .cta:hover { filter:brightness(0.95); }
   .mail { text-align:center; margin:10px 0 0; font-size:14px; color:var(--muted); }
-  .mail b { color:var(--ink); user-select:all; }
+  .addr { margin-top:16px; border:1.5px solid var(--line); border-radius:12px; padding:12px 14px; display:flex; flex-direction:column; gap:2px; }
+  .addr .lab { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; color:var(--muted); }
+  .addr .val { font-size:18px; font-weight:700; word-break:break-all; -webkit-user-select:all; user-select:all; }
+  button.cta { width:100%; border:0; cursor:pointer; font-family:inherit; }
+  .done { margin:10px 0 0; padding:10px 12px; border-radius:10px; background:var(--okbg); color:var(--ok); font-size:14px; font-weight:600; }
+  .apps { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:8px; margin-top:12px; }
+  .app { display:flex; align-items:center; justify-content:center; min-height:48px; border:1.5px solid var(--ink); border-radius:12px; color:var(--ink); font-weight:600; font-size:15px; text-decoration:none; }
   ul.get { margin:0; padding:0; list-style:none; }
   ul.get li { display:flex; gap:10px; padding:8px 0; }
   ul.get svg { flex-shrink:0; margin-top:3px; }
@@ -75,8 +81,18 @@
         <small>Si vous écrivez depuis une autre adresse, indiquez-nous celle du paiement.</small></div>
     </div>
 
-    <a class="cta" href="mailto:fantomes.audit@outlook.fr?subject=Mon%20relev%C3%A9%20pour%20l'audit%20Fant%C3%B4mes&amp;body=Bonjour%2C%0A%0AVoici%20mon%20relev%C3%A9%20en%20pi%C3%A8ce%20jointe.%0A%0AE-mail%20utilis%C3%A9%20pour%20le%20paiement%20%3A%20%0A%0AMerci%20!">Envoyer mon relevé par e-mail</a>
-    <p class="mail">ou écrivez à <b>fantomes.audit@outlook.fr</b></p>
+    <div class="addr">
+      <span class="lab">Adresse d'envoi</span>
+      <span class="val">fantomes.audit@outlook.fr</span>
+    </div>
+    <button type="button" class="cta" id="copy">Copier l'adresse e-mail</button>
+    <p class="done" id="done" hidden>Maintenant, ouvrez votre messagerie (Gmail, Outlook, Mail…), collez l'adresse dans le champ «&nbsp;À&nbsp;» et joignez votre relevé.</p>
+    <div class="apps">
+      <a class="app" href="mailto:fantomes.audit@outlook.fr?subject=Mon%20relev%C3%A9%20pour%20l%27audit%20Fant%C3%B4mes">Mail</a>
+      <a class="app" href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to=fantomes.audit@outlook.fr&amp;su=Mon%20relev%C3%A9%20pour%20l%27audit%20Fant%C3%B4mes" target="_blank" rel="noopener">Gmail</a>
+      <a class="app" href="https://outlook.live.com/mail/0/deeplink/compose?to=fantomes.audit@outlook.fr&amp;subject=Mon%20relev%C3%A9%20pour%20l%27audit%20Fant%C3%B4mes" target="_blank" rel="noopener">Outlook</a>
+    </div>
+    <p class="mail">Ou ouvrez directement votre messagerie avec l'un de ces boutons.</p>
   </div>
 
   <h2 class="d">Ce que vous allez recevoir</h2>
@@ -99,5 +115,32 @@
   </footer>
 
 </div>
+<script>
+(function () {
+  var email = 'fantomes.audit@outlook.fr';
+  var btn = document.getElementById('copy');
+  var done = document.getElementById('done');
+  function ok() {
+    btn.textContent = 'Adresse copiée ✓';
+    done.hidden = false;
+  }
+  function fallback() {
+    var t = document.createElement('textarea');
+    t.value = email; t.setAttribute('readonly', '');
+    t.style.position = 'fixed'; t.style.opacity = '0';
+    document.body.appendChild(t);
+    t.select(); t.setSelectionRange(0, email.length);
+    var worked = false;
+    try { worked = document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(t);
+    if (worked) { ok(); } else { alert('Notre adresse : ' + email); }
+  }
+  btn.addEventListener('click', function () {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(email).then(ok, fallback);
+    } else { fallback(); }
+  });
+})();
+</script>
 </body>
 </html>
